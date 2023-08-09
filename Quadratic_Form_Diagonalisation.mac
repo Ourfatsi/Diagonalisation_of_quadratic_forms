@@ -1,0 +1,139 @@
+/*Basic prefunctions*/
+kr(i,j):=block(
+    if (i=j) then return (1) else return (0)
+)$
+Id(n):= genmatrix(lambda([i,j], kr(i,j)), n, n);
+
+/*Tests*/
+/*Matrix is square*/
+is_matrixIsSquare(someQd):=block(
+    nL:length(row(someQd, 1)[1]),
+    nC:length(col(someQd, 1)),
+    if nL=nC then return (true) else (
+    print("Matrix is not square"),
+    return(false))
+    )$
+
+/*Function that permutate (La,Lb) and (Ca,Cb)*/
+permute(some_a,some_b, someMatrix):=block(
+    copy_someMatrix:someMatrix,
+    tampon:copy_someMatrix[some_a],
+    copy_someMatrix[some_a]:copy_someMatrix[some_b],
+    copy_someMatrix[some_b]:tampon,
+
+    copy_someMatrix:transpose(copy_someMatrix),
+
+    tampon:copy_someMatrix[some_a],
+    copy_someMatrix[some_a]:copy_someMatrix[some_b],
+    copy_someMatrix[some_b]:tampon,
+
+    copy_someMatrix:transpose(copy_someMatrix),
+    return(copy_someMatrix)
+)$
+
+/*Matrix is square and symmetrical*/
+is_matrixSquareAndSymmetrical(someQd):=block(
+    /*If matrix not square send -1*/
+    /*If matrix is square but asymmetrical send -2*/
+    
+    flag_code_error:0, /*"Compound" flag*/
+    
+    if is_matrixIsSquare(someQd)=false then
+        flag_code_error:-1
+    else(
+        break_flag:1,
+        n:length(col(someQd, 1)),
+        for i : 1 while i<n do (
+            for j : i+1 while j<=n.break_flag do (
+                if not(someQd[i][j] = someQd[j][i]) then(
+                break_flag:0,
+                print("matrix square but asymmetrical"),
+                flag_code_error:-2)))
+        ),
+    
+    return(flag_code_error)
+)$
+
+/*Diagonal Is Not Nul*/
+is_diagonalIsNotNul(someQd):=block(
+    flag:true,
+    nL:length(row(someQd, 1)[1]),
+    nC:length(col(someQd, 1)),
+    n:min(nL,nC),
+    for k : 1 while k<=n do (
+        if not(someQd[k][k] = 0) then 
+            flag:false
+        /*Pas d'instruction break dans Maxima ?*/
+    ),
+    return(flag)
+)$
+
+/*Calculs élémentaires*/
+dimMatrixSquare(someQd):=block(
+    if is_matrixIsSquare(someQd) then
+        return(length(col(someQd, 1)))
+    else
+        print("Erreur"),
+        return(-1))$
+
+/*Basic case, head not nul (zero)*/
+diagonaliser_1D(someQd):=block(
+    /*L'un ou l'autre, à voir en fonction de la recurrence*/
+    return(someQd)
+    /*return(someQdQ[1][1])*/
+)$
+
+diagonaliser_2D(someQd):=block(
+    return(matrix(
+        [1/someQd[1][1],         0],
+        [0,                     someQd[2][2]-someQd[1][2]^2/someQd[1][1]])))$
+
+/*Diagonal is Not Nul and head not nul*/
+diagonaliser_diagonalNotNul_HeadNotNul(someQd):=block(
+    dim:dimMatrixSquare(someQd),
+    some_Qd[0]:someQd,
+    
+    c:0,
+    for k : 1 while k<dim do (some_Qd[k]:Id(dim)),
+    
+    for k : 1 while k<dim do (
+        T[k]:Id(dim),
+        T[k][k]:some_Qd[k-1][k],
+        some_Qd[k]:expand(transpose(invert(T[k])).some_Qd[k-1].invert(T[k])),
+        c:c+1
+    ),
+    
+    return(some_Qd[c])
+)$
+
+/*Principal function*/
+diagonaliser(someQd):=block(
+    Answ:0,
+    code_error:0,
+    /*Step of verification of awiomatic conformity*/
+    /*Matrix should be squared and symétrical*/
+    /*This function already tests if matrix is square*/
+    code_error:is_matrixSquareAndSymmetrical(someQd),
+    
+    /*Principal branch*/
+    if code_error=0 then (    
+        /*Matrix dah to have at least one non-zero element from diagonal*/
+            /*If not algorythm calculatres a "step 0" matrix*/
+            /*If yes copy matrix as is*/
+            copy_someQd:someQd,
+    /*l'algorythm of Gausse step 1*/
+    Answ:diagonaliser_diagonalNotNul_HeadNotNul(copy_someQd),
+    
+    return(Answ)
+    ) /*End principal branch*/
+    else
+        return(code_error)
+)$
+
+/*
+  diagonaliser is still to be implemented.
+Things to work : 
+1 - Marix of type (head nul) or of type m5a, m5b, m5c still generates error, zeros shound be dispalced properly in order to diagonalize.
+2 - An algorythm that automatically make the reordering (push zeros backwards).
+3 - Step 0 is to be implmented, by step 0 we mean the case where all diagonals are zero and we make a variable change y1=x1+x2 ; y2=x1-x2. 
+*/
