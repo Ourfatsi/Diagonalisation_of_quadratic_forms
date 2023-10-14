@@ -9,7 +9,7 @@ Backdraw and improvements to do :
 
 The principal diagonaliser function is still to be implemented.
 Things to work : 
-1 - Marix of type (head nul) or of type m5a, m5b, m5c (see below) still generates error, zeros shound be dispalced properly in order to diagonalize.
+1 - Matrix of type (head nul) or of type m5a, m5b, m5c (see below) still generates error, zeros shound be dispalced properly in order to diagonalize.
 2 - An algorythm that automatically make the reordering (push zeros backwards).
 3 - Step 0 is to be implmented, by step 0 we mean the case where all diagonals are zero and we make a variable change y1=x1+x2 ; y2=x1-x2.
 
